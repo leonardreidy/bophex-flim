@@ -68,7 +68,8 @@
     is built. As such, it is comprised of a sound source or sources such as oscillators, sound
     sculpting modules including such things as high pass and low pass filters, LFOs, ring modulators,
     and so on, an envelope to shape the amplitude and other parameters, a mixer for mixing signals,
-    buses, and output modules.
+    buses, and output modules. This is reflected in the code, precisely as you would expect, as
+    we've seen above.
 
     Note the use of the store method, rather than the more customary add method; this is favoured
     for use with event streams/patterns. Interestingly, the docs also indicate that the add
@@ -77,6 +78,19 @@
 
       "After using this method, the synthdef can be used with event streams as in store(), but
        without the permanent artifact of a file on disk."
+
+    However, the definitive reason for using store over add here is that in order to work with
+    Pdefs, SynthDefs must be stored to the server. That is the short answer. The longer answer,
+    a la Harkins is as follows:
+
+      "To send only the relevant values to the new Synth, the Event needs to know what controls exist
+      in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor
+      is a SynthDesc, and the library is a SynthDescLib. The normal methods - .send(s), .load(s) -
+      to communicate a SynthDef to the server do not enter it into the library. As a result,
+      SynthDefs sent this way will not work properly with Pbind."
+
+    As such, it ought to be taken as gospel that SynthDefs built to be played by a Pbind should
+    use the store method, not add, load, send etc.
   */
   SynthDef(\hihat, { |out, ffreq=200, rq=0.5, attack=0, release=0.025, amp=0.1, pan|
 	var snd;
@@ -94,17 +108,18 @@
   /* ---------------------------------------------------------------------------------------*/
   /*
      Note that all FX SynthDefs in this project have the same general form:
+
       - some set of parameters for controlling the unit with suitable defaults
       - an audio rate input UGen (In) piped to an effect like FreeVerb2 or CombN
       - an audio rate output UGen (XOut)
 
      Inputs
       An In reads a signal from a bus. Recall that the instrument SynthDefs in this project send
-     signals out on a bus or buses (OffsetOut). Audio rate Ins read signals from audio
-     buses, while control rate Ins read signals from control buses.
+     signals out on a bus or buses (OffsetOut). Audio rate Ins read signals from audio buses, while
+     control rate Ins read signals from control buses.
 
      Outputs
-      An XOut sends a signal to a bus, crossfading with previous content. An OffsetOut writes
+      An XOut sends a signal to a bus, crossfading with previous contents. An OffsetOut writes
      a signal to a bus with sample accurate timing.
 
    */
@@ -159,12 +174,34 @@
 
 
   /* -------------------------------------------------------------------------------------- */
-  /* [PDEF] Define hihat Pdef                                                               */
+  /* [PDEF] Define hihat Pdef [TODO]                                                        */
   /* ---------------------------------------------------------------------------------------*/
+  /*
+    A Pdef is a stream reference definition.
+  */
   Pdef(\hihat,
 	/* -------------------------------------------------------------------------------------- */
     /* [PBIND] Combine/compose hihat patterns                                                 */
     /* ---------------------------------------------------------------------------------------*/
+	/**
+	  Pbind is a core concept in audio sequencing in Supercollider. A Pbind is defined by a
+	  list of key/value pairs: where the keys are names, and the values are patterns that will
+      determine the values in the resulting Events. The names for patterns in a Pbind
+	  correspond to the arguments in the SynthDef that the Pbind serves to play. The Pbind
+	  pattern's names determine the names for values in the resulting Event/s, and those values
+	  are sent to the corresponding Synth's control inputs. Consider the hihat Pbind, the
+	  \instrument symbol is a key that names the SynthDef the Pbind binds to. The remaining
+	  symbols are keys for the hihat SynthDef's control inputs:
+
+	    - \sustain (sustain)
+	    - \out (out)
+	    - \amp (amp)
+	    - \dur (dur)
+
+	  So, the Event streams given by the patterns, Prand, and the two instances of Pseq, modulate
+	the control inputs of the \hihat SynthDef. QED. For more information see Harkins' patterns
+	tutorial.
+	*/
 	Pbind(
 		\instrument, \hihat,
 		\sustain, 0.1,
