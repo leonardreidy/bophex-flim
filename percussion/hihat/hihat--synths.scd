@@ -84,13 +84,13 @@
   }).store;
 
   /* -------------------------------------------------------------------------------------- */
-  /* Define FX units                                                                     */
+  /* Define FX units                                                                        */
   /* ---------------------------------------------------------------------------------------*/
   /*
      Note that all FX SynthDefs in this project have the same general form:
       - some set of parameters for controlling the unit with suitable defaults
-      - an audio rate input (In) UGen piped to an effect like FreeVerb2 or CombN
-      - an audio rate output (XOut) UGen
+      - an audio rate input UGen (In) piped to an effect like FreeVerb2 or CombN
+      - an audio rate output UGen (XOut)
 
 
      Inputs
