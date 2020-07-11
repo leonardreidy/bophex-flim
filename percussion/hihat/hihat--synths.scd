@@ -64,6 +64,12 @@
     it (Pan2), output the signal to a couple of buses (OffsetOut), then store the resulting def
     to the scsynth server.
 
+    In essence, a SynthDef is built in essentially the same manner that a hardware synthesiser
+    is built. As such, it is comprised of a sound source or sources such as oscillators, sound
+    sculpting modules including such things as high pass and low pass filters, LFOs, ring modulators,
+    and so on, an envelope to shape the amplitude and other parameters, a mixer for mixing signals,
+    buses, and output modules.
+
     Note the use of the store method, rather than the more customary add method; this is favoured
     for use with event streams/patterns. Interestingly, the docs also indicate that the add
     method may be used for event streams/patterns, but without the cost of a permanent file
@@ -92,16 +98,14 @@
       - an audio rate input UGen (In) piped to an effect like FreeVerb2 or CombN
       - an audio rate output UGen (XOut)
 
-
      Inputs
-      An In reads a signal from a bus. Recall that the instrument SynthDefs send signals out
-     on a bus or buses (OffsetOut) in this project. Audio rate Ins read signals from audio
+      An In reads a signal from a bus. Recall that the instrument SynthDefs in this project send
+     signals out on a bus or buses (OffsetOut). Audio rate Ins read signals from audio
      buses, while control rate Ins read signals from control buses.
-
 
      Outputs
       An XOut sends a signal to a bus, crossfading with previous content. An OffsetOut writes
-      a signal to a bus with sample accurate timing.
+     a signal to a bus with sample accurate timing.
 
    */
   /* -------------------------------------------------------------------------------------- */
